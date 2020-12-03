@@ -1,0 +1,95 @@
+function curv = surfCurv(h, fsize, xycal)
+
+    [nrows, ncols] = size(h);
+    [x, y] = meshgrid(1:nrows, 1:ncols);
+    
+    h1 = imgaussfilt(h, fsize);
+    [H, K] = MGCurve(x, y, h1, xycal);
+    curv = smooth2a(K, fsize, fsize);
+end
+
+function [H,K]= MGCurve(varargin)
+
+%function takes a surface given by inputs X,Y,Z, and a smoothing kernal nr
+%and calculates the mean and gaussian curvature everywhere on the surface.
+%using the first and second fundamental forms. JN
+
+
+if nargin==4
+    X=varargin{1};
+    Y=varargin{2};
+    Z=varargin{3};
+    XYcal = varargin{4};
+    nr=3;
+else
+    X=varargin{1};
+    Y=varargin{2};
+    Z=varargin{3};
+    XYcal=varargin{4};
+    nr=varargin{5};
+end
+
+
+
+ [Xu,Xv]     =   gradient(X,nr);
+ Xu=smooth2a(Xu,2,2);
+ Xv=smooth2a(Xv,2,2);
+[Xuu,Xuv]   =   gradient(Xu,nr);
+[Xvu,Xvv]   =   gradient(Xv,nr);
+
+[Yu,Yv]     =   gradient(Y,nr);
+ Yu=smooth2a(Yu,2,2);
+ Yv=smooth2a(Yv,2,2);
+[Yuu,Yuv]   =   gradient(Yu,nr);
+[Yvu,Yvv]   =   gradient(Yv,nr);
+
+[Zu,Zv]     =   gradient(Z,nr);
+ Zu=smooth2a(Zu,2,2);
+ Zv=smooth2a(Zv,2,2);
+[Zuu,Zuv]   =   gradient(Zu,nr);
+[Zvu,Zvv]   =   gradient(Zv,nr);
+
+scale = XYcal;
+
+% Reshape 2D ArraYs into Vectors
+Xu = Xu(:)*scale;   Yu = Yu(:)*scale;   Zu = Zu(:); 
+Xv = Xv(:)*scale;   Yv = Yv(:)*scale;   Zv = Zv(:); 
+Xuu = Xuu(:)*(scale)^2; Yuu = Yuu(:)*(scale)^2; Zuu = Zuu(:); 
+Xuv = Xuv(:)*(scale)^2; Yuv = Yuv(:)*(scale)^2; Zuv = Zuv(:);
+Xvv = Xvv(:)*(scale)^2; Yvv = Yvv(:)*(scale)^2; Zvv = Zvv(:); 
+
+Xu          =   [Xu Yu Zu];
+Xv          =   [Xv Yv Zv];
+Xuu         =   [Xuu Yuu Zuu];
+Xuv         =   [Xuv Yuv Zuv];
+Xvv         =   [Xvv Yvv Zvv];
+
+% First fundamental Coeffecients of the surface (E,F,G)
+E           =   dot(Xu,Xu,2);
+F           =   dot(Xu,Xv,2);
+G           =   dot(Xv,Xv,2);
+
+m           =   cross(Xu,Xv,2);
+p           =   sqrt(dot(m,m,2));
+n           =   m./[p p p]; 
+
+% Second fundamental Coeffecients of the surface (L,M,N)
+L           =   dot(Xuu,n,2);
+M           =   dot(Xuv,n,2);
+N           =   dot(Xvv,n,2);
+
+[s,t] = size(Z);
+
+% Gaussian Curvature
+K = (L.*N - M.^2)./(E.*G - F.^2);
+K = reshape(K,s,t);
+
+% Mean Curvature
+H = (E.*N + G.*L - 2.*F.*M)./(2*(E.*G - F.^2));
+H = reshape(H,s,t);
+
+% Principal Curvatures
+Pmax = H + sqrt(H.^2 - K);
+Pmin = H - sqrt(H.^2 - K);
+
+end
