@@ -4,6 +4,7 @@ function dr_corr_hvid(fpath)
     
     addpath('../Drift/');
     addpath('../');
+    addpath('../Misc. functions');
     if ~isfile([fpath 'analysis.mat'])
         new_expt(fpath);
     end
