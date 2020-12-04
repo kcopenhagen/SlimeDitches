@@ -6,7 +6,6 @@ function dr_corr_hvid(fpath)
     addpath('../');
     addpath('../Misc. functions');
     addpath('../Misc. functions/real2rgb');
-    addpath('../Misc. functions/real2rgb/private');
     if ~isfile([fpath 'analysis.mat'])
         new_expt(fpath);
     end
@@ -17,11 +16,12 @@ function dr_corr_hvid(fpath)
     fps = 300/dt;
     
     %%
-    if isunix
-        v = VideoWriter([fpath 'dr_corr_h.avi'],'Uncompressed AVI');
-    else
+    if ismac
         v = VideoWriter([fpath 'dr_corr_h.mp4'],'MPEG-4');
         v.Quality = 95;
+    else
+        v = VideoWriter([fpath 'dr_corr_h.avi'],'Uncompressed AVI');
+
     end
     v.FrameRate = round(fps);
     open(v);
