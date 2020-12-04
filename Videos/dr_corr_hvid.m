@@ -15,8 +15,12 @@ function dr_corr_hvid(fpath)
     fps = 300/dt;
     
     %%
-    v = VideoWriter([fpath 'dr_corr_h.avi'],'Uncompressed AVI');
-    v.Quality = 95;
+    if isunix
+        v = VideoWriter([fpath 'dr_corr_h.avi'],'Uncompressed AVI');
+    else
+        v = VideoWriter([fpath 'dr_corr_h.mp4'],'MPEG-4');
+        v.Quality = 95;
+    end
     v.FrameRate = round(fps);
     open(v);
     
