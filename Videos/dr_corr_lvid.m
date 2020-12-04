@@ -1,6 +1,7 @@
 function dr_corr_lvid(fpath)
     %%
     addpath('../Drift/');
+    addpath('../');
     if ~isfile([fpath 'analysis.mat'])
         new_expt(fpath);
     end
