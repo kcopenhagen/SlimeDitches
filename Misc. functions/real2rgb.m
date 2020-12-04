@@ -113,7 +113,8 @@ maxInd = 1 + (size(map, 1) - 2) * (size(map, 2) ~= 4);
 if nargin < 3
     lims = [];
 end
-[B lims] = rescale(B, lims, [0 maxInd]);
+%[B lims] = rescale(B, lims, [0 maxInd]);
+B = rescale(B, lims, [0 maxInd]);
 
 % Compute indices and offsets
 if size(map, 2) == 4
