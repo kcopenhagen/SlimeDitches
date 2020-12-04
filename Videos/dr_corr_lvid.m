@@ -13,7 +13,7 @@ function dr_corr_lvid(fpath)
     fps = 300/dt;
     
     %%
-    v = VideoWriter([fpath 'dr_corr_l.mp4'],'MPEG-4');
+    v = VideoWriter([fpath 'dr_corr_l.avi'],'Uncompressed AVI');
     v.Quality = 95;
     v.FrameRate = round(fps);
     open(v);
